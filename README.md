@@ -8,7 +8,7 @@ One liner description of the repo.
 More details
 
 ## Status
-This project is still in alpha development, so not all commands will have implemented help files.
+This project is still in alpha development...
 
 > **Important**: Important oddities and common gotchas.
 
