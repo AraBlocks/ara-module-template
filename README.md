@@ -61,9 +61,9 @@ const bytes = reponame.doStuff(32, 'api_docs')
 If applicable.
 
 ## Contributing
-- [Commit message format](https://github.com/AraBlocks/docs/blob/master/COMMIT_FORMAT.md)
-- [commit message examples](https://github.com/AraBlocks/docs/blob/master/COMMIT_FORMAT_EXAMPLES.md)
-- [How to contribute](https://github.com/AraBlocks/docs/blob/master/CONTRIBUTING.md)
+- [Commit message format](/.github/COMMIT_FORMAT.md)
+- [commit message examples](/.github/COMMIT_FORMAT_EXAMPLES.md)
+- [How to contribute](/.github/CONTRIBUTING.md)
 
 Releases follow [Semantic Versioning](https://semver.org/)
 
