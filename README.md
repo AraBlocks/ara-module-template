@@ -1,7 +1,9 @@
 <img src="https://github.com/AraBlocks/docs/blob/master/ara.png" width="30" height="30" /> ara-reponame
 ========
 
-![](https://travis-ci.org/travis-ci/aradocs.svg?branch=master) ![](https://img.shields.io/npm/v/gh-badges.svg) ![](https://img.shields.io/github/release/qubyte/rubidium.svg)
+[![Build Status](https://travis-ci.com/AraBlocks/docs.svg?token=6WjTyCg41y8MBmCzro5x&branch=master)](https://travis-ci.com/AraBlocks/docs)
+![](https://img.shields.io/npm/v/gh-badges.svg) 
+![](https://img.shields.io/github/release/qubyte/rubidium.svg)
 
 One liner description of the repo.
 
