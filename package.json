@@ -1,0 +1,33 @@
+{
+  "name": "ara-reponame",
+  "version": "0.0.1",
+  "description": "Description of ara-reponame.",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava test",
+    "lint": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AraBlocks/ara-reponame.git"
+  },
+  "keywords": [
+    "ara",
+    "ara-reponame"
+  ],
+  "author": "Firstname Lastname <name@email.com>",
+  "license": "LGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/AraBlocks/ara-reponame/issues"
+  },
+  "homepage": "https://github.com/AraBlocks/ara-reponame#readme",
+  "dependencies": {},
+  "peerDependencies": {},
+  "optionalDependencies": {},
+  "devDependencies": {
+    "ava": "^0.25.0",
+    "eslint": "^4.19.1",
+    "eslint-config-ara": "github:arablocks/styleguide",
+    "eslint-plugin-import": "^2.12.0"
+  }
+}
