@@ -4,7 +4,7 @@
   "description": "Description of ara-reponame.",
   "main": "index.js",
   "scripts": {
-    "test": "ava test",
+    "test": ":",
     "lint": "eslint ."
   },
   "repository": {
