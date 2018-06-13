@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Description of ara-reponame.",
   "main": "index.js",
+  "bin": {},
   "scripts": {
     "test": ":",
     "lint": "eslint ."
