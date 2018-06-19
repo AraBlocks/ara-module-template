@@ -2,8 +2,8 @@
 ========
 
 [![Build Status](https://travis-ci.com/AraBlocks/docs.svg?token=6WjTyCg41y8MBmCzro5x&branch=master)](https://travis-ci.com/AraBlocks/docs)
-![](https://img.shields.io/npm/v/gh-badges.svg) 
-![](https://img.shields.io/github/release/qubyte/rubidium.svg)
+!FPO! ![](https://img.shields.io/npm/v/gh-badges.svg) 
+!FPO! ![](https://img.shields.io/github/release/qubyte/rubidium.svg)
 
 One liner description of the repo.
 
