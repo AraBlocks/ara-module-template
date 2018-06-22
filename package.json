@@ -1,6 +1,6 @@
 {
   "name": "ara-reponame",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Description of ara-reponame.",
   "main": "index.js",
   "bin": {},
