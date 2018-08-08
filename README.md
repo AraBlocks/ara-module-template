@@ -13,7 +13,7 @@ This project is still in alpha development.
 > **Important**: Important oddities and common gotchas.
 
 ## Dependencies
--
+- [Node](https://nodejs.org/en/download/)
 
 ## Installation
 ### Windows
@@ -45,7 +45,10 @@ console.log(result)
 ```
 
 ## API
-### `reponame.doStuff(arg1, arg2)`
+
+* [reponame.doStuff(arg1, arg2)](#doStuff)
+
+### `reponame.doStuff(arg1, arg2)` <a name="doStuff"></a>
 
 Lorem Ipsum dostuff
 - `arg1`: description
