@@ -1,28 +1,26 @@
-<img src="https://github.com/AraBlocks/docs/blob/master/ara.png" width="30" height="30" /> ara-reponame
+<img src="https://github.com/arablocks/docs/blob/master/ara.png" width="30" height="30" /> ara-reponame
 ========
 
-[![Build Status](https://travis-ci.com/AraBlocks/docs.svg?token=6WjTyCg41y8MBmCzro5x&branch=master)](https://travis-ci.com/AraBlocks/docs)
-!FPO! ![](https://img.shields.io/npm/v/gh-badges.svg) 
-!FPO! ![](https://img.shields.io/github/release/qubyte/rubidium.svg)
+[![Build Status](https://travis-ci.com/arablocks/docs.svg?token=6WjTyCg41y8MBmCzro5x&branch=master)](https://travis-ci.com/arablocks/docs)
 
 One liner description of the repo.
 
-More details
+More details...
 
 ## Status
-This project is still in alpha development...
+This project is still in alpha development.
 
 > **Important**: Important oddities and common gotchas.
 
 ## Dependencies
-- 
+-
 
 ## Installation
 ### Windows
-- 
+-
 
 ### Macos
-- 
+-
 
 ## Usage
 To run:
@@ -35,14 +33,14 @@ reponame.doStuff(arg1, arg2)
 
 ## Example
 ```sh
-$ reponame dostuff 32 'api_docs'
+$ reponame dostuff 32 'ara-docs'
 *EXAMPLE PRINT OUT OF RESPONSE HERE*
 ```
 
 ```js
 const reponame = require('ara-reponame')
 
-const result = reponame.doStuff(32, 'api_docs')
+const result = reponame.doStuff(32, 'ara-docs')
 console.log(result)
 ```
 
@@ -54,7 +52,7 @@ Lorem Ipsum dostuff
 - `arg2`: description
 
 ```js
-const bytes = reponame.doStuff(32, 'api_docs')
+const bytes = reponame.doStuff(32, 'ara-docs')
 ```
 
 ## Local Developement Setup
@@ -68,7 +66,7 @@ If applicable.
 Releases follow [Semantic Versioning](https://semver.org/)
 
 ## See Also
-- 
+- External [link](https://goo.gl/67cqTC)s
 
 ## License
 LGPL-3.0
