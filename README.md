@@ -63,7 +63,7 @@ If applicable.
 
 ## Contributing
 - [Commit message format](/.github/COMMIT_FORMAT.md)
-- [commit message examples](/.github/COMMIT_FORMAT_EXAMPLES.md)
+- [Commit message examples](/.github/COMMIT_FORMAT_EXAMPLES.md)
 - [How to contribute](/.github/CONTRIBUTING.md)
 
 Releases follow [Semantic Versioning](https://semver.org/)
