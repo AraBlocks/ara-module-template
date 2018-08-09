@@ -5,12 +5,15 @@
   "main": "index.js",
   "bin": {},
   "scripts": {
-    "test": ":",
-    "lint": "eslint ."
+    "test": "ava test",
+    "lint": "eslint .",
+    "lintfix": "eslint . --fix",
+    "coverage": "npm run nyc",
+    "nyc": "nyc npm test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AraBlocks/ara-reponame.git"
+    "url": "git+https://github.com/arablocks/ara-reponame.git"
   },
   "keywords": [
     "ara",
@@ -19,9 +22,9 @@
   "author": "Firstname Lastname <name@email.com>",
   "license": "LGPL-3.0",
   "bugs": {
-    "url": "https://github.com/AraBlocks/ara-reponame/issues"
+    "url": "https://github.com/arablocks/ara-reponame/issues"
   },
-  "homepage": "https://github.com/AraBlocks/ara-reponame#readme",
+  "homepage": "https://github.com/arablocks/ara-reponame#readme",
   "dependencies": {},
   "peerDependencies": {},
   "optionalDependencies": {},
