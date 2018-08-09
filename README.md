@@ -34,7 +34,7 @@ reponame.doStuff(arg1, arg2)
 ## Example
 ```sh
 $ reponame dostuff 32 'ara-docs'
-*EXAMPLE PRINT OUT OF RESPONSE HERE*
+*EXAMPLE RESPONSE HERE*
 ```
 
 ```js
@@ -58,7 +58,7 @@ Lorem Ipsum dostuff
 const bytes = reponame.doStuff(32, 'ara-docs')
 ```
 
-## Local Developement Setup
+## Local Development Setup
 If applicable.
 
 ## Contributing
