@@ -12,8 +12,8 @@ chore(scripts/): Moved extraneous scripts into scripts/ directory
 
 ## Documentation
 
-A `docs` type is a task that directly effects documentation that is
-constructed manually, programmitcally, or through a third-party. This
+A `docs` type is a task that directly affects documentation that is
+constructed manually, programmatically, or through a third-party. This
 can include typos, additions, deletions, and examples.
 
 ```
