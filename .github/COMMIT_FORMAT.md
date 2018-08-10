@@ -18,7 +18,7 @@ blank and other lines should be wrapped at 80 characters.
 
 ### Message subject
 
-A message subject is required and **must not** be proceeded by a
+A message subject is required and **must not** be preceded by a
 newline. The contents of a message subject should not be longer than 70
 characters and should not wrap onto the next line. If a message subject
 is too long, then it should be made smaller and a more verbose message
@@ -29,7 +29,7 @@ should be in the [message body][#message-body].
 * **feat** (new feature)
 * **fix** (bug fix)
 * **docs** (changes to documentation)
-* **style** (formatting, missing semi colons, etc; no code change)
+* **style** (formatting, missing semicolons, etc; no code change)
 * **refactor** (refactoring production code)
 * **test** (adding missing tests, refactoring tests; no production code change)
 * **chore** (updating grunt tasks etc; no production code change)
@@ -49,7 +49,7 @@ omitted.*
 
 ### Message body
 
-A message body is optional and must be proceeded by a new line after the
+A message body is optional and must be preceded by a new line after the
 message subject. The contents of the message body should be wrapped at 80
 characters.
 
@@ -64,7 +64,7 @@ A message body should:
 
 ### Message footer
 
-A message footer is optional and must be proceeded by a new line after the
+A message footer is optional and must be preceded by a new line after the
 message body. The contents of the message footer should be wrapped at 80
 characters.
 
