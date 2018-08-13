@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "lintfix": "eslint . --fix",
     "coverage": "npm run nyc",
-    "nyc": "nyc npm test"
+    "nyc": "nyc npm test",
+    "release-version": "bin/changelog"
   },
   "repository": {
     "type": "git",
@@ -32,6 +33,8 @@
     "ava": "^0.25.0",
     "eslint": "^4.19.1",
     "eslint-config-ara": "github:arablocks/eslint-config-ara",
-    "eslint-plugin-import": "^2.12.0"
+    "eslint-plugin-import": "^2.12.0",
+    "generate-changelog": "^1.7.1",
+    "jsdoc-to-markdown": "^4.0.1"
   }
 }
