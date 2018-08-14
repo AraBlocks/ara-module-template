@@ -1,6 +1,6 @@
 {
   "name": "ara-reponame",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "description": "Description of ara-reponame.",
   "main": "index.js",
   "bin": {},
@@ -10,7 +10,7 @@
     "lintfix": "eslint . --fix",
     "coverage": "npm run nyc",
     "nyc": "nyc npm test",
-    "release-version": "bin/changelog"
+    "release-version": "./scripts/changelog"
   },
   "repository": {
     "type": "git",
