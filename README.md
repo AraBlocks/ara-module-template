@@ -1,7 +1,7 @@
-<img src="https://github.com/arablocks/docs/blob/master/ara.png" width="30" height="30" /> ara-reponame
+<img src="https://github.com/arablocks/ara-module-template/blob/master/ara.png" width="30" height="30" /> ara-reponame
 ========
 
-[![Build Status](https://travis-ci.com/AraBlocks/docs.svg?token=6WjTyCg41y8MBmCzro5x&branch=master)](https://travis-ci.com/arablocks/docs)
+[![Build Status](https://travis-ci.com/AraBlocks/ara-module-template.svg?token=6WjTyCg41y8MBmCzro5x&branch=master)](https://travis-ci.com/AraBlocks/ara-module-template)
 
 One liner description of the repo.
 
