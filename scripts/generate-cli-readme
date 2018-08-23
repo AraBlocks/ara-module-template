@@ -2,7 +2,7 @@
 
 // WARNING:
 // 
-// This generator is very opinated about what is and isn't the right way to have a 
+// This generator is very opinionated about what is and isn't the right way to have a 
 // CLI help section. If you want to know the preferred way to write CLI help sections, 
 // look at `cfs-cli` or `ara-network-node-dcdn`
 
