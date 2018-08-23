@@ -15,6 +15,11 @@ let commandSections = []
 
 const PROJECT_NAME = process.argv[2]
 
+if (!PROJECT_NAME) {
+  process.stdout.write('No project name was declared!\n')
+  process.exit(1)
+}
+
 // Description of the main command since it doesn't have one written already
 const MAIN_CMD_DESCRIPTION = `Command line interface runner for ${PROJECT_NAME} commands. A ${PROJECT_NAME} command is any command
 found in a user's \`PATH\` or \`PATHEXT\` that is excutable and is prefixed with
