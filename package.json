@@ -10,7 +10,6 @@
     "lintfix": "eslint . --fix",
     "coverage": "npm run nyc",
     "nyc": "nyc npm test",
-    "release-version": "./scripts/changelog",
     "cli-readme": "conventional-changelog --same-file --preset angular --release-count 0 --infile CHANGELOG.md"
   },
   "repository": {
