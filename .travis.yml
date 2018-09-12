@@ -1,11 +1,18 @@
+sudo: required
 language: node_js
 node_js:
-  - "8"
+- 8.9.4
+services:
+- docker
+before_install:
+- openssl aes-256-cbc -K $encrypted_f326ba050898_key -iv $encrypted_f326ba050898_iv
+  -in ./config/id_rsa.enc -out ./config/id_rsa -d
+- docker build -t arablocks/test .
+- docker run arablocks/test /bin/sh -c "cd /root; npm run test"
 install:
-  - npm install
+- npm install --only=dev
 script:
-  - npm run test
-  - npm run lint
+- npm run lint
 cache:
   directories:
-    - "node_modules"
+  - node_modules

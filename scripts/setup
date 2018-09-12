@@ -1,0 +1,40 @@
+#!/bin/bash
+
+conf="
+;; Ethereum conf
+[web3]
+provider=ws://127.0.0.1:9545 ;; truffle ws"
+
+echo "${conf}" > /root/.ararc
+
+for repo in ara-identity ara-network; do
+  git clone git@github.com:AraBlocks/${repo}.git
+  if [ $? -ne 0 ]; then
+    exit 1
+  fi
+  cd ${repo}
+  npm install
+  npm link
+  cd ..
+done
+
+mkdir -p /root/.ara/keyrings
+
+# Create identity
+echo "test" | aid create
+
+identity="
+[network.identity]
+whoami=$(aid list | cut -d$'\n' -f1)
+root=/root/.ara/identities
+keyring=/root/.ara/keyrings/keyring"
+
+ls -la
+cat /root/.ararc
+
+echo "${identity}" > /root/.ararc
+
+for network in feed server archiver resolver; do
+  echo -ne "Creating network key for ${network}\n"
+  echo "test" | ank -n ${network} -s "test"
+done
