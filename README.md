@@ -47,8 +47,10 @@ console.log(result)
 ## API
 
 * [reponame.doStuff(arg1, arg2)](#doStuff)
+* [reponame.anotherThing(arg1, arg2)](#anotherThing)
 
-### `reponame.doStuff(arg1, arg2)` <a name="doStuff"></a>
+<a name="doStuff"></a>
+### `reponame.doStuff(arg1, arg2)` 
 
 Lorem Ipsum dostuff
 - `arg1`: description
@@ -56,6 +58,17 @@ Lorem Ipsum dostuff
 
 ```js
 const bytes = reponame.doStuff(32, 'ara-docs')
+```
+
+<a name="anotherThing"></a>
+### `reponame.anotherThing(arg1, arg2)` 
+
+Lorem Ipsum anotherThing
+- `arg1`: description
+- `arg2`: description
+
+```js
+const bytes = reponame.anotherThing(32, 'ara-docs')
 ```
 
 ## Local Development Setup
