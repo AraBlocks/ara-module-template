@@ -71,8 +71,8 @@ Lorem Ipsum anotherThing
 const bytes = reponame.anotherThing(32, 'ara-docs')
 ```
 
-## Local Development Setup
-If applicable.
+## CLI
+See [command line README][/docs/CLI.md].
 
 ## Contributing
 - [Commit message format](/.github/COMMIT_FORMAT.md)
