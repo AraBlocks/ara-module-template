@@ -7,6 +7,16 @@ One liner description of the repo.
 
 More details...
 
+## Table of Contents
+* [Status](#status)
+* [Dependencies](#dependencies)
+* [Installation](#installation)
+* [Usage](#usage)
+* [API](#api)
+* [CLI](#cli)
+* [Contributing](#contributing)
+* [See Also](#see-also)
+
 ## Status
 **Stable**
 
