@@ -20,7 +20,7 @@ More details...
 ## Status
 **Stable**
 
-> **Important**: Important oddities and common gotchas.
+> **Important**: Important oddities and common gotchas. Use this syntax throughout document.
 
 ## Dependencies
 - [Node](https://nodejs.org/en/download/)
@@ -33,50 +33,43 @@ More details...
 -
 
 ## Usage
-To run:
-```sh
-$ reponame dostuff arg1 arg2
-```
 ```js
 reponame.doStuff(arg1, arg2)
 ```
 
-## Example
-```sh
-$ reponame dostuff 32 'ara-docs'
-*EXAMPLE RESPONSE HERE*
-```
-
+### Example
 ```js
 const reponame = require('ara-reponame')
 
 const result = reponame.doStuff(32, 'ara-docs')
-console.log(result)
+`${console.log(result)}`
 ```
 
 ## API
-
 * [reponame.doStuff(arg1, arg2)](#doStuff)
 * [reponame.anotherThing(arg1, arg2)](#anotherThing)
 
 <a name="doStuff"></a>
-### `reponame.doStuff(arg1, arg2)` 
+### `reponame.doStuff(arg1, arg2)`
+Lorem Ipsum dostuff and some other things.
 
-Lorem Ipsum dostuff
 - `arg1`: description
 - `arg2`: description
 
+#### Example
 ```js
 const bytes = reponame.doStuff(32, 'ara-docs')
 ```
 
 <a name="anotherThing"></a>
-### `reponame.anotherThing(arg1, arg2)` 
+### `reponame.anotherThing(arg1, arg2)`
+Lorem Ipsum anotherThing, which does another thing.
+**Note**: This does _not_ do the other thing.
 
-Lorem Ipsum anotherThing
 - `arg1`: description
 - `arg2`: description
 
+#### Example
 ```js
 const bytes = reponame.anotherThing(32, 'ara-docs')
 ```
@@ -88,8 +81,7 @@ See [command line README][/docs/CLI.md].
 - [Commit message format](/.github/COMMIT_FORMAT.md)
 - [Commit message examples](/.github/COMMIT_FORMAT_EXAMPLES.md)
 - [How to contribute](/.github/CONTRIBUTING.md)
-
-Releases follow [Semantic Versioning](https://semver.org/)
+- [Release Versioning guidelines](https://semver.org/)
 
 ## See Also
 - External [link](https://goo.gl/67cqTC)s
