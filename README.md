@@ -44,7 +44,8 @@ reponame.doStuff(arg1, arg2)
 const reponame = require('ara-reponame')
 
 const result = reponame.doStuff(32, 'ara-docs')
-`${console.log(result)}`
+
+// console dot log the result here
 ```
 
 ## API
