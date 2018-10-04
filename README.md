@@ -20,7 +20,9 @@ More details...
 ## Status
 **Stable**
 
-> **Important**: Important oddities and common gotchas. Use this syntax throughout document.
+> **Important**: Important oddities and common gotchas.
+
+**Use this syntax**: throughout document to call attention to important notes.
 
 ## Dependencies
 - [Node](https://nodejs.org/en/download/)
@@ -81,7 +83,7 @@ See [command line README][/docs/CLI.md].
 - [Commit message format](/.github/COMMIT_FORMAT.md)
 - [Commit message examples](/.github/COMMIT_FORMAT_EXAMPLES.md)
 - [How to contribute](/.github/CONTRIBUTING.md)
-- [Release Versioning guidelines](https://semver.org/)
+- [Release versioning guidelines](https://semver.org/)
 
 ## See Also
 - External [link](https://goo.gl/67cqTC)s
