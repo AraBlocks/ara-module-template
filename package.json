@@ -11,7 +11,10 @@
     "coverage": "npm run nyc",
     "nyc": "nyc npm test",
     "changelog": "conventional-changelog --same-file --preset angular --release-count 0 --infile CHANGELOG.md",
-    "cli-readme": "./scripts/generate-cli-readme ara-reponame > CLI.md"
+    "cli-readme": "./scripts/generate-cli-readme ara-reponame > CLI.md",
+    "preversion": "echo preversion",
+    "version": "npm run changelog && git add CHANGELOG.md",
+    "postversion": "echo postversion"
   },
   "repository": {
     "type": "git",
