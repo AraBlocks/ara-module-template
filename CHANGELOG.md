@@ -1,3 +1,8 @@
+<a name="0.3.2"></a>
+## [0.3.2](https://github.com/arablocks/ara-reponame/compare/0.3.1...0.3.2) (2018-10-16)
+
+
+
 <a name="0.3.1"></a>
 ## [0.3.1](https://github.com/arablocks/ara-reponame/compare/0.0.1...0.3.1) (2018-10-16)
 
