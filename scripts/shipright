@@ -1,0 +1,360 @@
+#!/usr/bin/env node
+
+const { execFile } = require('child_process')
+const { resolve } = require('path')
+const program = require('yargs')
+const pify = require('pify')
+const fs = require('fs')
+
+// Parse program arguments based on yargs spec
+const { argv } = program
+  .command('$0 [options]', 'Builds documentation for `yargs` CLI', () => {
+    program
+      .positional('commandPath', {
+        type: 'string',
+        describe: 'Relative path to your commands',
+        default: resolve('./bin')
+      })
+      .option('output', {
+        alias: 'o',
+        type: 'string',
+        describe: 'Relative path for READMEs',
+        default: resolve('./docs')
+      })
+      .option('name', {
+        alias: 'n',
+        type: 'string',
+        describe: 'Base name of the READMEs',
+        default: 'CLI-README'
+      })
+      .help()
+  })
+
+// Main program entry
+module.exports = (async function main() {
+  let parentCommand
+  let commandDescriptions = {}
+
+  const formatDescription = (description) => `This command will ${description.toLowerCase()}`
+  const extractMatchingInstance = ({ arr, matchingText }) => arr.filter(instance => instance.includes(matchingText))[0]
+  const removePseudoTab = (text) => text.replace(/\s{2,}/, ' ')
+  const splitOnPseudoTab = (text) => text.split(/\s{2,}/)
+  const findMatching = ({ searchDomain, matchingText }) => {
+    return searchDomain.map((obj) => {
+      if (undefined == obj) {
+        return null
+      } else if ('string' == typeof obj) {
+        if (obj.includes(matchingText)) {
+          return obj
+        } else {
+          return null
+        }
+      } else if (Array.isArray(obj)) {
+        return obj.filter((child) => Boolean(findMatching({ searchDomain: Array.isArray(child) ? child : [ child ], matchingText })))[0]
+      } else {
+        return null
+      }
+    }).filter(Boolean)[0]
+  }
+
+  const generateMarkdown = ({ name, description, usage, options, positionals, subCommands }) => {
+    return `
+      ### ${name}(1)
+
+      #### Abstract
+
+      ${description}
+
+      #### Usage
+
+      \`\`\`sh
+      ${usage}
+      \`\`\`
+
+      #### Options
+      | Flag(s) | Description | Type |
+      |--|--|--|
+      ${options}
+      ${(() => {
+        if (positionals) {
+          return `
+
+            #### Positionals
+            | Flag(s) | Description | Type |
+            |--|--|--|
+            ${positionals}
+
+          `
+        } else {
+          return ''
+        }
+      })()}
+      ${(() => {
+        if (subCommands && name !== parentCommand) {
+          return `
+            #### Subcommands
+            | Subcommand | Description |
+            |--|--|
+            ${subCommands.join('\n')}
+
+            For further documentation: [${name} subcommands]
+          `
+        } else {
+          return ''
+        }
+      })()}
+    `
+  }
+
+  /**
+   * Extract command descriptions from command help
+   *
+   * @param  {String} commands Command descriptions in the help menu initiated by `-h`
+   *
+   * @return {Object}          Key-value of name and description
+   */
+
+  const extractBasicDescription = (header) => {
+    commands = header.split('\n')
+
+    const descriptions = {}
+    commands.forEach(cmd => {
+      let [ name, ...description ] = cmd.trim().split('  ')
+
+      // If the described command is not prepended with the project name, ignore it.
+      if (name.split(' ')[0] !== PROJECT_NAME) return
+
+      description = description.slice(-1)[0]
+                      .trim()
+                      .toLowerCase()
+
+      descriptions[name.replace(' ', '-')] = formatDescription(description)
+    })
+
+    return descriptions
+  }
+
+  /**
+   * Runs the given command with the `-h` flag and splits into sections
+   *
+   * @param  {String} name CFS command to run
+   * @return {[String]}    Response split by \n\n (each should be a different section)
+   */
+
+  const executeCommandHelp = async ({ path, command, subCommand }) => {
+    // Get the help section of a specifc command
+    const cmdPath = resolve(path, command)
+    const commands = [ subCommand || null, '--help' ].filter(Boolean)
+
+    try {
+      let [ stdout, stderr ] = await pify(execFile, { multiArgs: true })(cmdPath, commands)
+      return (stdout || stderr).split('\n\n')
+    } catch (e) {
+      console.error('Error occurred reading command: ', e)
+    }
+  }
+
+  const extractSubCommandInfo = ({ baseCommand, subCommand }) => {
+    console.log("BASE:", baseCommand, subCommand)
+  }
+
+  const extractCommandInfo = async ({ fullName, usage, description, subCommands, options, positionals, etc }) => {
+    try {
+      let subCommandsHelp = []
+      if (subCommands) {
+        const lines = subCommands.split('\n')
+        subCommands = lines.map((cmd) => {
+          cmd = cmd.trim()
+
+          let description
+          [ cmd, description ] = splitOnPseudoTab(cmd)
+
+          let [ command, subCommand ] = cmd.split(' ')
+
+          if (command === parentCommand) {
+            command = `${command}-${subCommand}`
+            subCommand = null
+          }
+
+          commandDescriptions[`${command}${subCommand ? ' ' + subCommand : ''}`] = description
+
+          if (subCommand && (subCommand[0] == '<' || subCommand[0] == '[')) return null
+          if (command.slice(0, parentCommand.length) !== parentCommand) return null
+
+          return { command, subCommand, description }
+        }).filter(Boolean)
+
+        subCommandsHelp = await Promise.all(subCommands.map(buildHelp))
+
+        subCommands = subCommands.map((cmd) => {
+          return `|${cmd.command}|${cmd.description}|`
+        })
+      }
+
+      // Containers for descriptions + type that are too long
+      let extendDescriptions = [].fill(null, 0, 30)
+      let extendType = [].fill(null, 0, 30)
+      options = options.split('\n')
+                       .filter(opt => opt !== 'Options:')
+                       .map((str, index) => {
+                          if (!str) return
+                          // Parse each option to extract the flag(s) and the flag description
+                          let [ description, ...flags ] = str.split(/(\-?\-[A-z]+)/g).reverse()
+                          // Parse out non-flags (like empty strings)
+                          flags = flags.filter(c =>  c && '-' == c[0]).join(', ')
+                          // Remove excessive padding to not exceed line length
+                          let type
+                          [ type, description ] = splitOnPseudoTab(description)
+
+                          if (flags.length == 0 && description) {
+                            extendDescriptions[index - 1] = description
+                          }
+
+                          return `|${flags}|${description}|${type.replace(/\[|\]/g, '')}|`
+                        })
+                        .map((statement, index) => {
+                          if (extendDescriptions[index] || extendType[index]) {
+                            let [ _, flags, description, type ] = statement.split(/\|/g)
+
+                            if (extendDescriptions[index]) {
+                              description = `${description} ${extendDescriptions[index]}`
+                            }
+
+                            if (extendType[index]) {
+                              type = extendType[index]
+                            }
+
+                            return `|${flags}|${description}|${type && type.replace(/\[|\]/g, '')}|` 
+                          } else if (extendDescriptions[index - 1] || extendType[index - 1]) {
+                            return null
+                          } else {
+                            return statement
+                          }
+                        })
+                       .join('\n')
+
+      extendDescriptions = [].fill(null, 0, 30)
+      extendType = [].fill(null, 0, 30)
+      positionals = positionals.split('\n')
+                               .filter(opt => opt !== 'Positionals:')
+                               .map((str, index) => {
+                                if (!str) return
+                                let required = false
+                                // Parse each option to extract the flag(s) and the flag description
+                                let [ positional, description, type ] = splitOnPseudoTab(str.trim())
+
+                                if (type && type.includes(' ')) {
+                                  const opts = type.split(' ')
+                                  if (opts[0] == '[required]') {
+                                    required = true
+                                  } else if (opts[0] !== '[default]') {
+                                    type = opts[0]
+                                    required = Boolean(opts[1])
+                                  }
+                                }
+                                // If we have a positional but either no description or a type for a description, 
+                                // we know this isn't a real positional
+                                if (positional && (!description || description[0] == '[')) {
+                                  // If the positional is the description and isn't the type
+                                  if (positional && positional[0] !== '[') {
+                                    extendDescriptions[index - 1] = positional
+                                    // If we also have a type
+                                    if (description[0] == '[') {
+                                      extendType[index - 1] = description
+                                    }
+                                  }
+
+                                  // If we only have a type
+                                  if (positional[0] == '[') {
+                                    extendType[index - 1] = positional
+                                  }
+                                }
+
+                                return `|${required ? `*${positional}*` : positional}|${description}|${type && type.replace(/\[|\]/g, '')}|`
+                               })
+                               .map((statement, index) => {
+                                  if (extendDescriptions[index] || extendType[index]) {
+                                    let [ _, positional, description, type ] = statement.split(/\|/g)
+
+                                    if (extendDescriptions[index]) {
+                                      description = `${description} ${extendDescriptions[index]}`
+                                    }
+
+                                    if (extendType[index]) {
+                                      type = extendType[index]
+                                    }
+
+                                    return `|${positional}|${description}|${type && type.replace(/\[|\]/g, '')}|` 
+                                  } else if (extendDescriptions[index - 1] || extendType[index - 1]) {
+                                    return null
+                                  } else {
+                                    return statement
+                                  }
+                                })
+                                .filter(Boolean)
+                                .join('\n')
+
+     const help = generateMarkdown({
+        name: fullName,
+        description: commandDescriptions[fullName],
+        usage,
+        options,
+        positionals,
+        subCommands
+      })
+      if (fullName === parentCommand) {
+        return removePseudoTab([ help, ...subCommandsHelp ].join('\n---\n'))
+      } else {
+        if (subCommandsHelp.length > 0) {
+          fs.writeFileSync(`./${fullName.toUpperCase()}-CLI`, subCommandsHelp.join('\n').replace(/[ \t]{3,}/gm, ''))
+        }
+        return removePseudoTab(help)
+      }
+    } catch (e) {
+      console.log("ERR:", e)
+      return
+    }
+  }
+
+  const getCommandHelp = async ({ path, command, subCommand }) => {
+    let [ usage, description, options, etc ] = await executeCommandHelp({ path, command, subCommand })
+
+    return {
+      description,
+      usage,
+      options,
+      etc
+    }
+  }
+
+  const buildHelp = async ({ command, subCommand }) => {
+    let { usage, options, description, etc } = await getCommandHelp({ path: argv.commandPath, command, subCommand })
+
+    let subCommands = ''
+    let positionals = ''
+    if (command != parentCommand) {
+      subCommands = findMatching({ searchDomain: [ options, description, etc ], matchingText: 'Commands:' }) || ''
+      usage = findMatching({ searchDomain: [ options, description, etc ], matchingText: `${command}${subCommand ? ` ${subCommand}` : ''}` })
+      positionals = findMatching({ searchDomain: [ options, description, etc ], matchingText: 'Positionals:' }) || ''
+      options = findMatching({ searchDomain: [ options, description, etc ], matchingText: 'Options:' })
+    } else {
+      subCommands = options
+      options = etc
+      description = `All other commands prepend with \`${parentCommand}-\` execute as a child of this command`
+    }
+
+    const fullName = `${command}${subCommand ? ` ${subCommand}` : ''}`
+    return await extractCommandInfo({ fullName, description, usage, subCommands, options, positionals, etc })
+  }
+
+  const files = fs.readdirSync(argv.commandPath)
+  if (files.length === 0) {
+    throw new Error(`Could not find any files in ${argv.commandPath}`)
+  }
+
+  parentCommand = files.sort((a, b) => a.length > b.length)[0]
+
+  const help = await buildHelp({ command: parentCommand })
+
+  fs.writeFileSync('./CLI', help.replace(/[ \t]{3,}/gm, ''))
+})()
