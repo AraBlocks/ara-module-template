@@ -26,7 +26,7 @@ const { argv } = program
         describe: 'Base name of the READMEs',
         default: 'CLI-README'
       })
-      .help()
+      .help('h')
   })
 
 module.exports = (async function main() {
