@@ -1,7 +1,7 @@
 // Make sure that mocking is always loaded before other classes to ensure
 // our mocks override the modules
+// eslint-disable-next-line no-unused-vars
 const constants = require('./fixtures/constants')
-const mocking = require('./fixtures/mocking')
 
 const test = require('blue-tape')
 const file = require('../file')
