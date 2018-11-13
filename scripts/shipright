@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 
+// v1.0.0 - Nov 13th, 2018
+
+// Disclaimer: This doesn't create the CLI docs without fault, it's simply to get most of the work done. 
+//             You will still need to read and check the resulting docs.
+
 const { execFile } = require('child_process')
 const { resolve } = require('path')
 const program = require('yargs')
@@ -24,7 +29,7 @@ const { argv } = program
         alias: 'n',
         type: 'string',
         describe: 'Base name of the READMEs',
-        default: 'CLI-README'
+        default: 'CLI-README.md'
       })
       .help('h')
   })
@@ -33,6 +38,7 @@ module.exports = (async function main() {
   let parentCommand
   let commandDescriptions = {}
   let needsSubcommandLink = []
+  let commandHelp = {}
 
   // Utility functions
   const formatDescription = (description) => `This command will ${description.toLowerCase()}`
@@ -117,8 +123,6 @@ module.exports = (async function main() {
             | Subcommand | Description |
             |--|--|
             ${subCommands.join('\n')}
-
-            For further documentation: [${name} subcommands]
           `
         } else {
           return ''
@@ -344,7 +348,7 @@ module.exports = (async function main() {
         subCommandsHelp = await Promise.all(subCommands.map(buildHelp))
 
         subCommands = subCommands.map((cmd) => {
-          return `|${cmd.command}|${cmd.description}|`
+          return `|${cmd.command} ${cmd.subCommand}|${cmd.description}|`
         })
       }
 
@@ -388,10 +392,6 @@ module.exports = (async function main() {
     }
   }
 
-  const createSubcommandCLILink = (name) => {
-    return `[${name} subcommands](docs/${name.toUpperCase()}-CLI)`
-  }
-
   /**
    * Take in somewhat unstructured sections, format and organize into proper section
    * 
@@ -401,6 +401,7 @@ module.exports = (async function main() {
    */
   const buildHelp = async ({ command, subCommand }) => {
     const fullName = `${command}${subCommand ? ` ${subCommand}` : ''}`
+    console.info(`Building CLI help for ${fullName}`)
     let { usage, options, description, etc } = await getCommandHelp({ path: argv.commandPath, command, subCommand })
 
     let subCommands = ''
@@ -427,18 +428,9 @@ module.exports = (async function main() {
     })
 
     if (fullName === parentCommand) {
-      const topLevelHelp = removePseudoTab([ help, ...subCommandsHelp ].join('\n---\n')) 
-
-      const subCommandHelpLinks = needsSubcommandLink.map(createSubcommandCLILink)
-
-      return [ topLevelHelp, ...subCommandHelpLinks ].join('\n')
+      return removePseudoTab([ help, ...subCommandsHelp ].join('\n---\n'))
     } else {
-      if (subCommandsHelp.length > 0) {
-        needsSubcommandLink.push(fullName)
-        write(subCommandsHelp.join('\n'), `${fullName.toUpperCase()}-CLI`)
-      }
-
-      return removePseudoTab(help)
+      return removePseudoTab([ help, ...subCommandsHelp ].join('\n'))
     }
   }
 
