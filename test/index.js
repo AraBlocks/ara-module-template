@@ -1,10 +1,13 @@
 const docs = require('../')
-const test = require('ava')
+const test = require('blue-tape')
+
+// blue-tape == tape with promise support
+// https://github.com/substack/tape for api docs
 
 test('docs.file', (t) => {
-  t.true('object' === typeof docs.file)
+  t.deepEqual('object', typeof docs.file)
 })
 
 test('docs.doStuff', (t) => {
-  t.true('function' === typeof docs.file.doStuff)
+  t.deepEqual('function', typeof docs.file.doStuff)
 })
