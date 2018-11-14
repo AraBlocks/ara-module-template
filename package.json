@@ -15,6 +15,10 @@
     "api-docs": "jsdoc *.js -d docs",
     "version": "npm run api-docs && npm run cli-docs && npm run changelog && git add CHANGELOG.md docs/"
   },
+  "files": [
+    "*.js",
+    "/src"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/arablocks/ara-reponame.git"
