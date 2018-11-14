@@ -14,6 +14,10 @@
     "cli-readme": "./scripts/generate-cli-readme ara-reponame > CLI.md",
     "version": "npm run changelog && git add CHANGELOG.md"
   },
+  "files": [
+    "*.js",
+    "/src"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/arablocks/ara-reponame.git"
