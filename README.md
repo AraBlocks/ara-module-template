@@ -59,7 +59,7 @@ Lorem Ipsum dostuff and some other things.
 - `arg1`: description
 - `arg2`: description
 
-Returns a [type]. Extra info about returned [thing] if needed.
+Returns `type`. Description (if needed).
 
 #### Example
 ```js
@@ -74,7 +74,7 @@ Lorem Ipsum anotherThing, which does another thing.
 - `arg1`: description
 - `arg2`: description
 
-Returns a [type]. Extra info about returned [thing] if needed.
+Returns `type`. Description (if needed).
 
 #### Example
 ```js
