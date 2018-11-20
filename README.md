@@ -59,6 +59,8 @@ Lorem Ipsum dostuff and some other things.
 - `arg1`: description
 - `arg2`: description
 
+Returns a [type]. Extra info about returned [thing] if needed.
+
 #### Example
 ```js
 const bytes = reponame.doStuff(32, 'ara-docs')
@@ -71,6 +73,8 @@ Lorem Ipsum anotherThing, which does another thing.
 
 - `arg1`: description
 - `arg2`: description
+
+Returns a [type]. Extra info about returned [thing] if needed.
 
 #### Example
 ```js
