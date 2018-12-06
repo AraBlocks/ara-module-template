@@ -34,6 +34,7 @@
   },
   "homepage": "https://github.com/arablocks/ara-reponame#readme",
   "dependencies": {
+    "pify": "^4.0.1",
     "yargs": "^11.0.0"
   },
   "peerDependencies": {},
