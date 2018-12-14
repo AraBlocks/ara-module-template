@@ -238,9 +238,9 @@ module.exports = (async function main() {
     }
 
     function parse(str) {
-      let [ description, ...flags ] = str.split(/(-?-[A-z]+)/g).reverse()
+      let [ description, ...flags ] = str.split(/(-?-([A-z]|\-)+)/g).reverse()
 
-      flags = flags.filter(f => Boolean(f) && f.trim().length > 0 && f.trim() !== ',')
+      flags = flags.filter(f => Boolean(f) && f.trim().length > 0 && f.trim() !== ',' && f.trim()[0] === '-')
       description = removeTabs(description)
 
       const { type, required, defaultValue } = parseSpecifiers(description)
