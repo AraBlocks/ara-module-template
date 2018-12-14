@@ -38,7 +38,7 @@ const { argv } = program
 module.exports = (async function main() {
   let parentCommand
   const commandDescriptions = {}
-  const TYPES = ['string', 'boolean', 'number']
+  const TYPES = [ 'string', 'boolean', 'number' ]
   // Utility functions
   const splitOnPseudoTab = text => text.split(/\s{2,}/)
   const removePseudoTab = text => text.replace(/\s{2,}/, ' ')
@@ -152,23 +152,22 @@ module.exports = (async function main() {
    * @return {Object}       { type, required, defaultValue }
    */
   const parseSpecifiers = (str) => {
+    // eslint-disable-next-line no-invalid-regex
     let specifiers = str.match(/(?<=\[)[^\[]+(?=\])/g) || []
 
-    type = specifiers.map((s) => {
+    const [ type ] = specifiers.map((s) => {
       if (isType(s)) {
         return s
-      } else {
-        return null
       }
-    }).filter(Boolean)[0]
-    const required = specifiers.some(s => s === 'required') || false
-    defaultValue = specifiers.map(s => {
+      return null
+    }).filter(Boolean)
+    const required = specifiers.some(s => 'required' === s) || false
+    const [ defaultValue ] = specifiers.map((s) => {
       if (s && s.includes('default')) {
         // Takes the second half of 'default: "something"' and strips spaces and quotes
-        return s.split(':')[1].trim().replace(/\"/g, '')
-      } else {
-        return null
+        return s.split(':')[1].trim().replace(/"/g, '')
       }
+      return null
     }).filter(Boolean)[0]
 
     return { type, required, defaultValue }
@@ -196,7 +195,7 @@ module.exports = (async function main() {
           const line = parse(str)
           const { description, flags } = line
 
-          if (description && flags.length === 0) {
+          if (description && 0 === flags.length) {
             overrun[index - 1] = str
             return null
           }
@@ -204,10 +203,8 @@ module.exports = (async function main() {
           return line
         })
 
-      overrun.map((str, index) => {
-        if (!str) {
-          return
-        } else {
+      overrun.forEach((str, index) => {
+        if (str) {
           // Get the line that overran
           let overranLine
           if (lines[index]) {
@@ -220,11 +217,13 @@ module.exports = (async function main() {
 
           const line = parse(str)
 
-          overranLine.description += (' ' + line.description)
+          overranLine.description += (` ${line.description}`)
         }
       })
 
-      lines = lines.filter(Boolean).map(({ flags, description, type, defaultValue, required }) => {
+      lines = lines.filter(Boolean).map(({
+        flags, description, type, defaultValue, required
+      }) => {
         description = description.replace(/\[.*/, '').trim()
 
         return [ required ? `**${flags}**` : flags, description, type, defaultValue ]
@@ -238,14 +237,16 @@ module.exports = (async function main() {
     }
 
     function parse(str) {
-      let [ description, ...flags ] = str.split(/(-?-([A-z]|\-)+)/g).reverse()
+      let [ description, ...flags ] = str.split(/(-?-([A-z]|-)+)/g).reverse()
 
-      flags = flags.filter(f => Boolean(f) && f.trim().length > 0 && f.trim() !== ',' && f.trim()[0] === '-')
+      flags = flags.filter(f => Boolean(f) && f.trim().length > 0 && f.trim() !== ',' && '-' === f.trim()[0])
       description = removeTabs(description)
 
       const { type, required, defaultValue } = parseSpecifiers(description)
 
-      return { flags, description, type, defaultValue, required }
+      return {
+        flags, description, type, defaultValue, required
+      }
     }
   }
 
@@ -270,29 +271,28 @@ module.exports = (async function main() {
           const line = parse(str)
           const { name, description } = line
 
-          if ((name && !description) || '[' == description[0]) {
+          if ((name && !description) || '[' === description[0]) {
             overrun[index - 1] = str
             return null
-          } else {
-            return line
           }
+          return line
         })
 
-      overrun.map((str, index) => {
-        if (!str) {
-          return
-        } else {
+      overrun.forEach((str, index) => {
+        if (str) {
           // Get the line that overran
           const overranLine = lines[index]
 
           const line = parse(str)
 
-          overranLine.description += (' ' + line.name)
-          overranLine.type = line.description && line.description.replace(/\[|\]/g, '') || ''
+          overranLine.description += (` ${line.name}`)
+          overranLine.type = (line.description && line.description.replace(/\[|\]/g, '')) || ''
         }
       })
 
-      lines = lines.filter(Boolean).map(({ name, description, type, defaultValue, required }) => {
+      lines = lines.filter(Boolean).map(({
+        name, description, type, defaultValue, required
+      }) => {
         description = description.replace(/\[.*/, '').trim()
 
         return [ required ? `**${name}**` : name, description, type, defaultValue ]
@@ -317,7 +317,9 @@ module.exports = (async function main() {
 
       const { required, defaultValue, type: parsedType } = parseSpecifiers(`${type} ${description}`)
 
-      return { name, description, type: parsedType, defaultValue, required }
+      return {
+        name, description, type: parsedType, defaultValue, required
+      }
     }
   }
 
