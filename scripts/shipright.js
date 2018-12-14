@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// v1.0.1 - Dec 14th, 2018
+// v1.1.0 - Dec 14th, 2018
 
 // Disclaimer: This doesn't create the CLI docs without fault,
 //             it's simply to get most of the work done.
@@ -106,7 +106,7 @@ module.exports = (async function main() {
       return `
 
             #### Positionals
-            | Flag(s) | Description | Type | Default |
+            | Name | Description | Type | Default |
             |--|--|--|--|
             ${positionals}
 
@@ -147,12 +147,31 @@ module.exports = (async function main() {
   }
 
   /**
-   * Parse flags for required and defaults
-   * @param  {String} description [description]
-   * @return {[type]}             [description]
+   * Parse flags for required, default and type
+   * @param  {String}  str  String to parse
+   * @return {Object}       { type, required, defaultValue }
    */
-  const parseFlagElements = (description) => {
+  const parseSpecifiers = (str) => {
+    let specifiers = str.match(/(?<=\[)[^\[]+(?=\])/g) || []
 
+    type = specifiers.map((s) => {
+      if (isType(s)) {
+        return s
+      } else {
+        return null
+      }
+    }).filter(Boolean)[0]
+    const required = specifiers.some(s => s === 'required') || false
+    defaultValue = specifiers.map(s => {
+      if (s && s.includes('default')) {
+        // Takes the second half of 'default: "something"' and strips spaces and quotes
+        return s.split(':')[1].trim().replace(/\"/g, '')
+      } else {
+        return null
+      }
+    }).filter(Boolean)[0]
+
+    return { type, required, defaultValue }
   }
 
   /**
@@ -168,47 +187,65 @@ module.exports = (async function main() {
         .filter(Boolean)
 
       // Containers for descriptions + type that are too long
-      const extendDescriptions = [].fill(null, 0, 30)
-      const extendType = [].fill(null, 0, 30)
+      const overrun = [].fill(null, 0, 30)
 
       // Split the lines into `description` and `flags` (that order)
-      const info = lines
+      lines = lines
         .map((str, index) => {
           // Parse each option to extract the flag(s) and the flag description
-          let [ description, ...flags ] = str.split(/(-?-[A-z]+)/g).reverse()
+          const line = parse(str)
+          const { description, flags } = line
 
-          flags = flags.filter(f => Boolean(f) && f.trim().length > 0 && f.trim() !== ',')
-          description = removeTabs(description)
+          if (description && flags.length === 0) {
+            overrun[index - 1] = str
+            return null
+          }
 
-          // No clue why negative lookbehind works, but JS doesn't have positive lookbehinds. :(
-          let specifiers = description.match(/(?<=\[)[^\[]+(?=\])/g) || []
-          const type = specifiers.map((s) => {
-            if (isType(s)) {
-              return s
-            } else {
-              return null
-            }
-          }).filter(Boolean)[0]
-          const required = specifiers.some(s => s === 'required') || false
-          const defaultValue = specifiers.map(s => {
-            if (s.includes('default')) {
-              return s.split(':')[1].trim().replace(/\"/g, '')
-            } else {
-              return null
-            }
-          }).filter(Boolean)[0]
-
-          description = description.replace(/\[.*/, '').trim()
-
-          return [ required ? `**${flags}**` : flags, description, type, defaultValue ]
+          return line
         })
-        .filter(Boolean)
+
+      overrun.map((str, index) => {
+        if (!str) {
+          return
+        } else {
+          // Get the line that overran
+          let overranLine
+          if (lines[index]) {
+            overranLine = lines[index]
+          } else {
+            // If you have a super, super long line or something...
+            // I'm ignoring anything that has to go back two+, just write a shorter command
+            overranLine = lines[index - 1]
+          }
+
+          const line = parse(str)
+
+          overranLine.description += (' ' + line.description)
+        }
+      })
+
+      lines = lines.filter(Boolean).map(({ flags, description, type, defaultValue, required }) => {
+        description = description.replace(/\[.*/, '').trim()
+
+        return [ required ? `**${flags}**` : flags, description, type, defaultValue ]
+      })
 
       // Format into table rows and join into headerless table
       return lines.map(formatIntoTable).join('\n')
     } catch (e) {
       console.error('Error occurred while extracting options:', e)
       return null
+    }
+
+    function parse(str) {
+      let [ description, ...flags ] = str.split(/(-?-[A-z]+)/g).reverse()
+
+      flags = flags.filter(f => Boolean(f) && f.trim().length > 0 && f.trim() !== ',')
+      description = removeTabs(description)
+
+      const { type, required, defaultValue } = parseSpecifiers(description)
+
+      return { flags, description, type, defaultValue, required }
     }
   }
 
@@ -225,24 +262,62 @@ module.exports = (async function main() {
         .filter(Boolean)
 
       // Containers for descriptions + type that are too long
-      const extendDescriptions = [].fill(null, 0, 30)
-      const extendType = [].fill(null, 0, 30)
+      const overrun = [].fill(null, 0, 30)
 
       // Split the lines into `description` and `flags` (that order)
       lines = lines
         .map((str, index) => {
-          // Parse each option to extract the flag(s) and the flag description
-          // eslint-disable-next-line prefer-const
-          let [ name, description, type ] = splitOnPseudoTab(str.trim())
+          const line = parse(str)
+          const { name, description } = line
 
-          console.log("Positionals: ", { name, description, type })
+          if ((name && !description) || '[' == description[0]) {
+            overrun[index - 1] = str
+            return null
+          } else {
+            return line
+          }
         })
+
+      overrun.map((str, index) => {
+        if (!str) {
+          return
+        } else {
+          // Get the line that overran
+          const overranLine = lines[index]
+
+          const line = parse(str)
+
+          overranLine.description += (' ' + line.name)
+          overranLine.type = line.description && line.description.replace(/\[|\]/g, '') || ''
+        }
+      })
+
+      lines = lines.filter(Boolean).map(({ name, description, type, defaultValue, required }) => {
+        description = description.replace(/\[.*/, '').trim()
+
+        return [ required ? `**${name}**` : name, description, type, defaultValue ]
+      })
 
       // Format into table rows and join into headerless table
       return lines.filter(Boolean).map(formatIntoTable).join('\n')
     } catch (e) {
       console.error('Error occurred while extracting positionals:', e)
       return null
+    }
+
+    /**
+     * Parse line and break into components
+     * @param  {String]}  str  String to parse
+     * @return {Object}        Parsed components
+     */
+    function parse(str) {
+      // Parse each option to extract the flag(s) and the flag description
+      // eslint-disable-next-line prefer-const
+      let [ name, description = '', type = '' ] = splitOnPseudoTab(str.trim())
+
+      const { required, defaultValue, type: parsedType } = parseSpecifiers(`${type} ${description}`)
+
+      return { name, description, type: parsedType, defaultValue, required }
     }
   }
 
