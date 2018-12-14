@@ -1,3 +1,18 @@
+# [0.4.0](https://github.com/arablocks/ara-reponame/compare/0.3.3...0.4.0) (2018-12-14)
+
+
+### Bug Fixes
+
+* **scripts/shipright:** Fix hypen containing flag parsing ([de4c195](https://github.com/arablocks/ara-reponame/commit/de4c195))
+* **scripts/shipright:** Handle overflow, positionals specifiers ([308ee46](https://github.com/arablocks/ara-reponame/commit/308ee46))
+
+
+### Features
+
+* **scripts/shipright:** Add defaults, required and type parsing ([33c1cda](https://github.com/arablocks/ara-reponame/commit/33c1cda))
+
+
+
 ## [0.3.3](https://github.com/arablocks/ara-reponame/compare/0.0.1...0.3.3) (2018-11-26)
 
 
