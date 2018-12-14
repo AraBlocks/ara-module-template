@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// v1.0.0 - Nov 13th, 2018
+// v1.0.1 - Dec 14th, 2018
 
 // Disclaimer: This doesn't create the CLI docs without fault,
 //             it's simply to get most of the work done.
@@ -18,13 +18,13 @@ const { argv } = program
       .positional('commandPath', {
         type: 'string',
         describe: 'Relative path to your commands',
-        default: resolve('./bin')
+        default: resolve(process.cwd(), 'bin')
       })
       .option('output', {
         alias: 'o',
         type: 'string',
         describe: 'Relative path for READMEs',
-        default: resolve('./docs')
+        default: resolve(process.cwd(), 'docs')
       })
       .option('name', {
         alias: 'n',
@@ -38,16 +38,16 @@ const { argv } = program
 module.exports = (async function main() {
   let parentCommand
   const commandDescriptions = {}
-
+  const TYPES = ['string', 'boolean', 'number']
   // Utility functions
   const splitOnPseudoTab = text => text.split(/\s{2,}/)
   const removePseudoTab = text => text.replace(/\s{2,}/, ' ')
   const formatIntoTable = columns => `|${columns.join('|')}|`
   const removeTabs = text => text.replace(/[ \t]{3,}/gm, '')
+  const isType = text => TYPES.includes(text)
 
   /**
    * Given a set of strings and arrays, find the instance that contains the given text
-   *
    * @param  {Array}  searchDomain    Array of instances,
    *                                    can be strings or arrays of strings
    * @param  {String}  matchingText   String to match
@@ -74,14 +74,12 @@ module.exports = (async function main() {
 
   /**
    * Format parameters into a command help section
-   *
    * @param  {String}           name         Name of the command
    * @param  {String}           description  What the command does
    * @param  {String}           usage        Example of the command
    * @param  {String}           options      Command options, formatted into Markdown table rows
    * @param  {[String]}         positionals  Positionals of the command
    * @param  {[Array<String>]}  subCommands  Subcommands of the command
-   *
    * @return {String}
    */
   const generateMarkdown = ({
@@ -100,16 +98,16 @@ module.exports = (async function main() {
       \`\`\`
 
       #### Options
-      | Flag(s) | Description | Type |
-      |--|--|--|
+      | Flag(s) | Description | Type | Default |
+      |--|--|--|--|
       ${options}
       ${(() => {
     if (positionals) {
       return `
 
             #### Positionals
-            | Flag(s) | Description | Type |
-            |--|--|--|
+            | Flag(s) | Description | Type | Default |
+            |--|--|--|--|
             ${positionals}
 
           `
@@ -131,9 +129,7 @@ module.exports = (async function main() {
 
   /**
    * Runs the given command with the `-h` flag and splits into sections
-   *
    * @param  {String}  name  CFS command to run
-   *
    * @return {String}        Response split by \n\n (each should be a different section)
    */
   const executeCommandHelp = async ({ path, command, subCommand }) => {
@@ -151,8 +147,16 @@ module.exports = (async function main() {
   }
 
   /**
+   * Parse flags for required and defaults
+   * @param  {String} description [description]
+   * @return {[type]}             [description]
+   */
+  const parseFlagElements = (description) => {
+
+  }
+
+  /**
    * Cleans up and formats text describing command options
-   *
    * @param  {String}  text  Options section text
    * @return {String}        Options in Markdown table row format
    */
@@ -168,58 +172,40 @@ module.exports = (async function main() {
       const extendType = [].fill(null, 0, 30)
 
       // Split the lines into `description` and `flags` (that order)
-      lines = lines
+      const info = lines
         .map((str, index) => {
           // Parse each option to extract the flag(s) and the flag description
-          let [ description, ...name ] = str.split(/(-?-[A-z]+)/g).reverse()
+          let [ description, ...flags ] = str.split(/(-?-[A-z]+)/g).reverse()
 
-          // Parse out non-flags (like empty strings)
-          name = name.filter(c => c && '-' === c[0]).join(', ')
+          flags = flags.filter(f => Boolean(f) && f.trim().length > 0 && f.trim() !== ',')
+          description = removeTabs(description)
 
-          // Remove excessive padding to not exceed line length
-          let type
-          [ type, description ] = splitOnPseudoTab(description)
+          // No clue why negative lookbehind works, but JS doesn't have positive lookbehinds. :(
+          let specifiers = description.match(/(?<=\[)[^\[]+(?=\])/g) || []
+          const type = specifiers.map((s) => {
+            if (isType(s)) {
+              return s
+            } else {
+              return null
+            }
+          }).filter(Boolean)[0]
+          const required = specifiers.some(s => s === 'required') || false
+          const defaultValue = specifiers.map(s => {
+            if (s.includes('default')) {
+              return s.split(':')[1].trim().replace(/\"/g, '')
+            } else {
+              return null
+            }
+          }).filter(Boolean)[0]
 
-          // If there are no flags and only description, we can assume this is
-          //   runover from the previous line
-          if (0 === name.length && description) {
-            extendDescriptions[index - 1] = description
+          description = description.replace(/\[.*/, '').trim()
 
-            return null
-          }
-          if (type) {
-            type = type.replace(/\[|\]/g, '')
-          }
-
-          return [ name, description, type ]
+          return [ required ? `**${flags}**` : flags, description, type, defaultValue ]
         })
         .filter(Boolean)
 
-      lines = lines.map((line, index) => {
-        if (extendDescriptions[index] || extendType[index]) {
-          // `name` is not reassigned, but there isn't a great way to
-          //    fix this error without causing more errors
-          //
-          // eslint-disable-next-line prefer-const
-          let [ name, description, type ] = line
-
-          if (extendDescriptions[index]) {
-            description = `${description} ${extendDescriptions[index]}`
-          }
-
-          if (extendType[index]) {
-            type = extendType[index]
-          }
-
-          return [ name, description, type ]
-        } else if (extendDescriptions[index - 1] || extendType[index - 1]) {
-          return null
-        }
-        return line
-      })
-
       // Format into table rows and join into headerless table
-      return lines.filter(Boolean).map(formatIntoTable).join('\n')
+      return lines.map(formatIntoTable).join('\n')
     } catch (e) {
       console.error('Error occurred while extracting options:', e)
       return null
@@ -228,7 +214,6 @@ module.exports = (async function main() {
 
   /**
    * Cleans up and formats text describing command positionals
-   *
    * @param  {String}  text  Positionals section text
    * @return {String}        Positionals in Markdown table row format
    */
@@ -250,58 +235,8 @@ module.exports = (async function main() {
           // eslint-disable-next-line prefer-const
           let [ name, description, type ] = splitOnPseudoTab(str.trim())
 
-          if (type && type.includes(' ')) {
-            const opts = type.split(' ')
-            if (opts[0] !== '[default]') {
-              [ type ] = opts
-            }
-          }
-          // If we have a positional but either no description or a type for a description,
-          // we know this isn't a real positional
-          if (name && (!description || '[' === description[0])) {
-            // If the positional is the description and isn't the type
-            if (name && name[0] !== '[') {
-              extendDescriptions[index - 1] = name
-              // If we also have a type
-              if ('[' === description[0]) {
-                extendType[index - 1] = description.replace(/\[|\]/g, '')
-              }
-            }
-
-            // If we only have a type
-            if ('[' === name[0]) {
-              extendType[index - 1] = name.replace(/\[|\]/g, '')
-            }
-
-            return null
-          }
-          if (type) {
-            type = type.replace(/\[|\]/g, '')
-          }
-
-          return [ name, description, type ]
+          console.log("Positionals: ", { name, description, type })
         })
-        .filter(Boolean)
-
-      lines = lines.map((line, index) => {
-        if (extendDescriptions[index] || extendType[index]) {
-          // eslint-disable-next-line prefer-const
-          let [ name, description, type ] = line
-
-          if (extendDescriptions[index]) {
-            description = `${description} ${extendDescriptions[index]}`
-          }
-
-          if (extendType[index]) {
-            type = extendType[index]
-          }
-
-          return [ name, description, type ]
-        } else if (extendDescriptions[index - 1] || extendType[index - 1]) {
-          return null
-        }
-        return line
-      })
 
       // Format into table rows and join into headerless table
       return lines.filter(Boolean).map(formatIntoTable).join('\n')
@@ -313,11 +248,9 @@ module.exports = (async function main() {
 
   /**
    * Parse sections into table formats
-   *
    * @param  {String}  subCommands  Subcommands section text
    * @param  {String}  options      Options section text
    * @param  {String}  positionals  Positionals section text
-   *
    * @return {Object}               Object of parsed sections text
    */
   const extractCommandInfo = async ({ subCommands = '', options = '', positionals = '' }) => {
@@ -374,7 +307,6 @@ module.exports = (async function main() {
 
   /**
    * Writes text to a file at argv.output
-   *
    * @param  {String}    text  Text to write
    * @param  {[String]}  name  Name of the file to write
    */
@@ -385,7 +317,6 @@ module.exports = (async function main() {
 
   /**
    * Gets the help section of a given command and, optionally, a subcommand
-   *
    * @param  {[String]}  path        Path of the command
    * @param  {String}    command     Name of the command
    * @param  {[String]}  subCommand  Name of the subcommand
@@ -405,7 +336,6 @@ module.exports = (async function main() {
 
   /**
    * Take in somewhat unstructured sections, format and organize into proper section
-   *
    * @param  {String}    command     Name of the command
    * @param  {[String]}  subCommand  Name of the subcommand
    * @return {String}                Text of help
