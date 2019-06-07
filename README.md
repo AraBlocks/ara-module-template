@@ -82,7 +82,7 @@ const bytes = reponame.anotherThing(32, 'ara-docs')
 ```
 
 ## CLI
-See [command line README][/docs/CLI.md].
+See [command line README](/docs/CLI.md).
 
 ## Contributing
 - [Commit message format](/.github/COMMIT_FORMAT.md)
